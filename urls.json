@@ -1,4 +1,4 @@
 [
-  "https://examplephish.com",
-  "http://login-fake.com"
+  "http://example.com",
+  "https://expired.badssl.com/"
 ]
