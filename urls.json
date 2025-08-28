@@ -1,4 +1,43 @@
-[
-  "http://example.com",
-  "https://expired.badssl.com/"
-]
+import requests
+import json
+
+def fetch_openphish():
+    url = "https://openphish.com/feed.txt"
+    r = requests.get(url)
+    return r.text.splitlines() if r.status_code == 200 else []
+
+def fetch_phishtank():
+    url = "http://data.phishtank.com/data/online-valid.json"
+    r = requests.get(url)
+    if r.status_code == 200:
+        data = r.json()
+        return [item["url"] for item in data if "url" in item]
+    return []
+
+def fetch_urlhaus():
+    url = "https://urlhaus.abuse.ch/downloads/text/"
+    r = requests.get(url)
+    if r.status_code == 200:
+        return [line for line in r.text.splitlines() if not line.startswith("#")]
+    return []
+
+def main():
+    all_urls = set()
+
+    print("🔄 抓取 OpenPhish...")
+    all_urls.update(fetch_openphish())
+
+    print("🔄 抓取 PhishTank...")
+    all_urls.update(fetch_phishtank())
+
+    print("🔄 抓取 URLhaus...")
+    all_urls.update(fetch_urlhaus())
+
+    # 輸出 JSON
+    with open("urls.json", "w") as f:
+        json.dump(sorted(all_urls), f, indent=2)
+
+    print(f"✅ 已更新 urls.json，共 {len(all_urls)} 條網址")
+
+if __name__ == "__main__":
+    main()
